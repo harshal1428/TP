@@ -1,44 +1,52 @@
-/**
- * Core Data Structures for Automata Engine
- * Completely decoupled from the UI (React/ReactFlow).
- */
-
-export type AutomatonType = 'DFA' | 'NFA' | 'PDA' | 'TM';
+export type StateId = string;
+export type Symbol = string;
 
 export interface State {
-  id: string;
-  name: string;
+  id: StateId;
+  label: string;
   isInitial: boolean;
   isFinal: boolean;
-  isDead?: boolean; // Trapping state
 }
 
-/** 
- * A generalized transition interface.
- * For DFA: symbol matches input, nextState is single.
- * For NFA: symbol can be epsilon (empty), nextStates is an array/set.
- * For PDA: popSymbol and pushSymbols are used.
- */
 export interface Transition {
   id: string;
-  fromStateId: string;
-  toStateId: string;
-  symbol: string | null; // null represents epsilon (ε)
-  popSymbol?: string | null; // For PDA
-  pushSymbols?: string[]; // For PDA
+  source: StateId;
+  target: StateId;
+  symbol: Symbol; // ε can be represented as an empty string ""
 }
 
-export interface AutomatonDefinition {
-  type: AutomatonType;
-  states: State[];
-  transitions: Transition[];
-  alphabet: string[];
-  stackAlphabet?: string[]; // For PDA
+// Base Automaton
+export interface Automaton {
+  states: Record<StateId, State>;
+  transitions: Record<string, Transition>;
+  alphabet: Set<Symbol>;
 }
 
-export interface StepResult {
-  activeStateIds: string[]; // Current active states (multiple for NFA)
-  stack: string[]; // For PDA
-  inputPointer: number;
-  isAccepted: boolean | null; // null if not finished yet
+export interface DFA extends Automaton {
+  // DFA specific logic can be typed here if needed
+}
+
+export interface NFA extends Automaton {
+  // NFA specific logic
+}
+
+export interface PDATransition extends Transition {
+  popSymbol: string;
+  pushSymbol: string;
+}
+
+export interface PDA extends Omit<Automaton, 'transitions'> {
+  transitions: Record<string, PDATransition>;
+  stackAlphabet: Set<Symbol>;
+}
+
+export interface TMTransition extends Transition {
+  writeSymbol: Symbol;
+  moveDirection: 'L' | 'R' | 'S'; // Left, Right, Stay
+}
+
+export interface TuringMachine extends Omit<Automaton, 'transitions'> {
+  transitions: Record<string, TMTransition>;
+  tapeAlphabet: Set<Symbol>;
+  blankSymbol: Symbol;
 }
