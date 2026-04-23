@@ -13,7 +13,7 @@
 ## Phases
 
 ### Phase 1: Foundation & Project Setup
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Set up the project structure, basic UI layout, and core data structures for automata states and transitions.
 
 ### Phase 2: DFA & NFA Engines Implementation
