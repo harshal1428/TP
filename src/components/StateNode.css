@@ -1,0 +1,60 @@
+.state-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+}
+
+.state-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  transition: all var(--transition-normal);
+  z-index: 2;
+}
+
+.state-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.state-node.final .state-circle {
+  /* Inner circle for final states */
+  outline: 2px solid var(--border-active);
+  outline-offset: -6px;
+}
+
+.state-node.active .state-circle {
+  border-color: var(--accent-primary);
+  background: var(--accent-bg);
+  box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px var(--accent-glow);
+}
+
+.state-node.active.final .state-circle {
+  outline-color: var(--accent-primary);
+}
+
+.initial-indicator {
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  color: var(--text-secondary);
+  z-index: 1;
+}
+
+.state-node.active .initial-indicator {
+  color: var(--accent-primary);
+}

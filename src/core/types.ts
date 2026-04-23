@@ -6,6 +6,7 @@ export interface State {
   label: string;
   isInitial: boolean;
   isFinal: boolean;
+  position?: { x: number; y: number };
 }
 
 export interface Transition {
