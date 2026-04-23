@@ -4,14 +4,9 @@ import '@xyflow/react/dist/style.css';
 
 export const Canvas: React.FC = () => {
   return (
-    <div style={{ flex: 1, position: 'relative' }}>
-      <ReactFlow 
-        nodes={[]} 
-        edges={[]}
-        fitView
-        colorMode="dark"
-      >
-        <Background color="#334155" gap={16} />
+    <div className="canvas-container glass-panel">
+      <ReactFlow defaultNodes={[]} defaultEdges={[]}>
+        <Background gap={16} />
         <Controls />
       </ReactFlow>
     </div>
