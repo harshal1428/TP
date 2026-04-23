@@ -41,6 +41,11 @@ export interface PDA extends Omit<Automaton, 'transitions'> {
   stackAlphabet: Set<Symbol>;
 }
 
+export interface PDAConfiguration {
+  stateId: StateId;
+  stack: string[];
+}
+
 export interface TMTransition extends Transition {
   writeSymbol: Symbol;
   moveDirection: 'L' | 'R' | 'S'; // Left, Right, Stay
