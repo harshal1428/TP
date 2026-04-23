@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { AutomatonStatus } from '../hooks/useFiniteAutomaton';
+import { StackVisualizer } from './StackVisualizer';
+import { PDAConfiguration } from '../core/types';
 
 interface SidebarProps {
-  automatonType: 'DFA' | 'NFA';
-  setAutomatonType: (type: 'DFA' | 'NFA') => void;
+  automatonType: 'DFA' | 'NFA' | 'PDA';
+  setAutomatonType: (type: 'DFA' | 'NFA' | 'PDA') => void;
   engine: {
     input: string;
     pointer: number;
     status: AutomatonStatus;
     step: () => void;
     reset: (newInput?: string) => void;
+    activeConfigs?: PDAConfiguration[];
   };
 }
 
@@ -29,16 +32,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ automatonType, setAutomatonTyp
           className="ui-select" 
           value={automatonType}
           onChange={(e) => {
-            setAutomatonType(e.target.value as 'DFA' | 'NFA');
+            setAutomatonType(e.target.value as 'DFA' | 'NFA' | 'PDA');
             engine.reset(inputValue); // reset when switching type
           }}
         >
           <option value="DFA">Deterministic Finite Automaton (DFA)</option>
           <option value="NFA">Non-deterministic Finite Automaton (NFA)</option>
+          <option value="PDA">Pushdown Automaton (PDA)</option>
         </select>
         <p className="placeholder-text">
-          {automatonType === 'DFA' ? "Accepts strings ending in 'ab'." : "Accepts strings containing 'ab'."}
+          {automatonType === 'DFA' && "Accepts strings ending in 'ab'."}
+          {automatonType === 'NFA' && "Accepts strings containing 'ab'."}
+          {automatonType === 'PDA' && "Validates balanced brackets '()'."}
         </p>
+
+        {engine.activeConfigs && engine.activeConfigs.length > 0 && (
+          <StackVisualizer stack={engine.activeConfigs[0].stack} />
+        )}
       </div>
       
       <div className="sidebar-section" style={{ marginTop: 'auto' }}>

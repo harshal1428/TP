@@ -2,14 +2,21 @@ import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Canvas } from './components/Canvas';
 import { useFiniteAutomaton } from './hooks/useFiniteAutomaton';
+import { usePushdownAutomaton } from './hooks/usePushdownAutomaton';
 import { sampleDFA, sampleNFA } from './core/samples';
+import { samplePDA } from './core/samples-pda';
 import './App.css';
 
 const App: React.FC = () => {
-  const [automatonType, setAutomatonType] = useState<'DFA' | 'NFA'>('DFA');
-  const automaton = automatonType === 'DFA' ? sampleDFA : sampleNFA;
+  const [automatonType, setAutomatonType] = useState<'DFA' | 'NFA' | 'PDA'>('DFA');
   
-  const engine = useFiniteAutomaton(automaton);
+  const faEngine = useFiniteAutomaton(
+    automatonType === 'DFA' ? sampleDFA : (automatonType === 'NFA' ? sampleNFA : null)
+  );
+  const pdaEngine = usePushdownAutomaton(automatonType === 'PDA' ? samplePDA : null);
+
+  const engine = automatonType === 'PDA' ? pdaEngine : faEngine;
+  const automaton = automatonType === 'DFA' ? sampleDFA : (automatonType === 'NFA' ? sampleNFA : samplePDA);
 
   return (
     <div className="app-container">
