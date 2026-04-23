@@ -17,7 +17,7 @@
 **Objective**: Set up the project structure, basic UI layout, and core data structures for automata states and transitions.
 
 ### Phase 2: DFA & NFA Engines Implementation
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Implement the transition logic, step-by-step simulation, and visualization highlighting for Deterministic and Non-deterministic Finite Automata.
 
 ### Phase 3: PDA Engine Implementation
