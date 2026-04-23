@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { AutomatonStatus } from '../hooks/useFiniteAutomaton';
 import { StackVisualizer } from './StackVisualizer';
+import { TapeVisualizer } from './TapeVisualizer';
 import { PDAConfiguration } from '../core/types';
 
 interface SidebarProps {
-  automatonType: 'DFA' | 'NFA' | 'PDA';
-  setAutomatonType: (type: 'DFA' | 'NFA' | 'PDA') => void;
+  automatonType: 'DFA' | 'NFA' | 'PDA' | 'TM';
+  setAutomatonType: (type: 'DFA' | 'NFA' | 'PDA' | 'TM') => void;
   engine: {
     input: string;
-    pointer: number;
+    pointer?: number;
     status: AutomatonStatus;
     step: () => void;
     reset: (newInput?: string) => void;
     activeConfigs?: PDAConfiguration[];
+    tape?: string[];
+    head?: number;
   };
 }
 
@@ -32,22 +35,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ automatonType, setAutomatonTyp
           className="ui-select" 
           value={automatonType}
           onChange={(e) => {
-            setAutomatonType(e.target.value as 'DFA' | 'NFA' | 'PDA');
-            engine.reset(inputValue); // reset when switching type
+            setAutomatonType(e.target.value as 'DFA' | 'NFA' | 'PDA' | 'TM');
+            engine.reset(inputValue);
           }}
         >
           <option value="DFA">Deterministic Finite Automaton (DFA)</option>
           <option value="NFA">Non-deterministic Finite Automaton (NFA)</option>
           <option value="PDA">Pushdown Automaton (PDA)</option>
+          <option value="TM">Turing Machine (TM)</option>
         </select>
         <p className="placeholder-text">
           {automatonType === 'DFA' && "Accepts strings ending in 'ab'."}
           {automatonType === 'NFA' && "Accepts strings containing 'ab'."}
           {automatonType === 'PDA' && "Validates balanced brackets '()'."}
+          {automatonType === 'TM' && "Analyzes password strength (Length + Markers)."}
         </p>
 
         {engine.activeConfigs && engine.activeConfigs.length > 0 && (
           <StackVisualizer stack={engine.activeConfigs[0].stack} />
+        )}
+        {automatonType === 'TM' && engine.tape !== undefined && engine.head !== undefined && (
+          <TapeVisualizer tape={engine.tape} head={engine.head} />
         )}
       </div>
       
@@ -75,16 +83,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ automatonType, setAutomatonTyp
 
         {engine.status !== 'idle' && (
           <div style={{ marginTop: '16px', padding: '12px', borderRadius: '8px', background: 'var(--bg-primary)' }}>
-            <div style={{ marginBottom: '8px', fontFamily: 'var(--font-mono)' }}>
-              Input: {engine.input.split('').map((char, i) => (
-                <span key={i} style={{ 
-                  color: i === engine.pointer ? 'var(--accent-primary)' : (i < engine.pointer ? 'var(--text-muted)' : 'inherit'),
-                  fontWeight: i === engine.pointer ? 'bold' : 'normal',
-                  textDecoration: i === engine.pointer ? 'underline' : 'none'
-                }}>{char}</span>
-              ))}
-              {engine.pointer === engine.input.length && <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>_</span>}
-            </div>
+            {automatonType !== 'TM' && engine.pointer !== undefined && (
+              <div style={{ marginBottom: '8px', fontFamily: 'var(--font-mono)' }}>
+                Input: {engine.input.split('').map((char, i) => (
+                  <span key={i} style={{ 
+                    color: i === engine.pointer ? 'var(--accent-primary)' : (i < engine.pointer ? 'var(--text-muted)' : 'inherit'),
+                    fontWeight: i === engine.pointer ? 'bold' : 'normal',
+                    textDecoration: i === engine.pointer ? 'underline' : 'none'
+                  }}>{char}</span>
+                ))}
+                {engine.pointer === engine.input.length && <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>_</span>}
+              </div>
+            )}
             <div style={{
               fontWeight: 'bold',
               color: engine.status === 'accepted' ? 'var(--success)' : (engine.status === 'rejected' ? 'var(--error)' : 'var(--text-primary)')
