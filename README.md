@@ -43,6 +43,38 @@ export default defineConfig([
 ])
 ```
 
+## Vercel Deployment
+
+This project is configured for Vercel with:
+
+- `vercel.json`
+  - `framework: "vite"`
+  - `installCommand: "npm ci"`
+  - `buildCommand: "npm run build"`
+  - `outputDirectory: "dist"`
+- `.vercelignore` to exclude local workflow/docs files from deployment context.
+
+### One-time preparation
+
+```powershell
+npm ci
+npm run build
+```
+
+### Deploy with Vercel CLI
+
+```powershell
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+### Deploy via GitHub (recommended)
+
+1. Push this repository to GitHub.
+2. Import the repository in Vercel.
+3. Vercel auto-detects `vite` and uses `npm run build` with `dist` output.
+
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js

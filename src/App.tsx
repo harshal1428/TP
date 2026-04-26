@@ -1,57 +1,58 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Canvas } from './components/Canvas';
 import { useFiniteAutomaton } from './hooks/useFiniteAutomaton';
-import { usePushdownAutomaton } from './hooks/usePushdownAutomaton';
-import { useTuringMachine } from './hooks/useTuringMachine';
-import { sampleDFA, sampleNFA } from './core/samples';
-import { samplePDA } from './core/samples-pda';
-import { strengthTM } from './core/samples-tm';
+import { sampleDFA, sampleNFA, samplePasswordDFA } from './core/samples';
+import { completeDFA, minimizeDFA } from './core/dfa-utils';
 import './App.css';
 
 const App: React.FC = () => {
-  const [automatonType, setAutomatonType] = useState<'DFA' | 'NFA' | 'PDA' | 'TM'>('DFA');
-  
-  const faEngine = useFiniteAutomaton(
-    automatonType === 'DFA' ? sampleDFA : (automatonType === 'NFA' ? sampleNFA : null)
+  const [automatonType, setAutomatonType] = useState<'DFA' | 'NFA'>('DFA');
+  const [isDFAMinimized, setIsDFAMinimized] = useState(false);
+
+  const normalizedDFA = useMemo(() => completeDFA(sampleDFA), []);
+  const minimizedDFA = useMemo(() => minimizeDFA(normalizedDFA), [normalizedDFA]);
+  const dfaForUse = isDFAMinimized ? minimizedDFA : normalizedDFA;
+
+  const emailDFAEngine = useFiniteAutomaton(
+    automatonType === 'DFA' 
+      ? dfaForUse
+      : automatonType === 'NFA' ? sampleNFA : null
   );
-  const pdaEngine = usePushdownAutomaton(automatonType === 'PDA' ? samplePDA : null);
-  const tmEngine = useTuringMachine(automatonType === 'TM' ? strengthTM : null);
-
-  const getEngine = () => {
-    switch (automatonType) {
-      case 'PDA': return pdaEngine;
-      case 'TM': return tmEngine;
-      default: return faEngine;
-    }
-  };
-
-  const getAutomaton = () => {
-    switch (automatonType) {
-      case 'DFA': return sampleDFA;
-      case 'NFA': return sampleNFA;
-      case 'PDA': return samplePDA;
-      case 'TM': return strengthTM;
-    }
-  };
-
-  const engine = getEngine();
-  const automaton = getAutomaton();
+  const passwordDFAEngine = useFiniteAutomaton(
+    automatonType === 'DFA' ? samplePasswordDFA : null
+  );
+  const engine = automatonType === 'DFA' ? emailDFAEngine : emailDFAEngine;
+  const automaton = automatonType === 'DFA' ? dfaForUse : sampleNFA;
 
   return (
     <div className="app-container">
       <header className="app-header glass-panel">
         <h1 className="text-gradient">Automata Theory Visualizer</h1>
+        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+          Σ = &#123; local, @, a-z, ., other &#125;
+        </div>
       </header>
       <main className="app-main">
-        <Sidebar 
+        <Sidebar
           automatonType={automatonType}
-          setAutomatonType={setAutomatonType}
+          setAutomatonType={(type) => {
+            setAutomatonType(type);
+            if (type !== 'DFA') setIsDFAMinimized(false);
+          }}
+          isDFAMinimized={isDFAMinimized}
+          onToggleDFAMinimize={() => setIsDFAMinimized((prev) => !prev)}
+          automaton={automaton}
           engine={engine}
+          secondaryEngine={automatonType === 'DFA' ? passwordDFAEngine : undefined}
         />
-        <Canvas 
-          automaton={automaton} 
+        <Canvas
+          automaton={automaton}
           activeStates={engine.currentStates}
+          secondaryAutomaton={automatonType === 'DFA' ? samplePasswordDFA : null}
+          secondaryActiveStates={automatonType === 'DFA' ? passwordDFAEngine.currentStates : undefined}
+          secondaryTitle={automatonType === 'DFA' ? 'Password DFA (Lower Reference Pane)' : undefined}
+          primaryTitle={automatonType === 'DFA' ? 'Email DFA (Upper Interactive Pane)' : undefined}
         />
       </main>
     </div>

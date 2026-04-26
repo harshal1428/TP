@@ -1,0 +1,10 @@
+.git
+.gitignore
+.vscode
+.agents
+.agent
+.gsd
+docs
+scripts
+temp_frontend
+*.log
