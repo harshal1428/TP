@@ -167,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <input
                     type="text"
                     className="ui-input"
-                    placeholder="Enter password (e.g. Vedant21@2005)"
+                    placeholder="Enter password (e.g. Vedant21#2445)"
                     value={secondaryEngine.input}
                     onChange={(e) => secondaryEngine.reset(e.target.value)}
                   />
