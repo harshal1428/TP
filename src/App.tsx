@@ -28,9 +28,21 @@ const App: React.FC = () => {
   return (
     <div className="app-container">
       <header className="app-header glass-panel">
-        <h1 className="text-gradient">Automata Theory Visualizer</h1>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-          Σ = &#123; local, @, a-z, ., other &#125;
+        <div>
+          <h1 className="text-gradient">Automata Theory Visualizer</h1>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Σ = &#123; local, @, a-z, ., other &#125;
+          </div>
+        </div>
+        <div className="app-header-actions">
+          <a
+            className="header-link-button"
+            href="https://dfa-simulator-opal.vercel.app"
+            target="_blank"
+            rel="noreferrer"
+          >
+            DFA Simulator
+          </a>
         </div>
       </header>
       <main className="app-main">
